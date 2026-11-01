@@ -9,6 +9,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', OverviewDashboardView.as_view(), name='overview'),
     
+    # Authentication & User Management
+    path('accounts/', include('apps.accounts.urls', namespace='accounts')),
+
     # Inventory Module
     path('inventory/', include('apps.inventory.urls', namespace='inventory')),
     # Demand Forecasting Module

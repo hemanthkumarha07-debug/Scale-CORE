@@ -1,0 +1,232 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In | SCALE.Core — Supply Chain Analytics & Logistics Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/enterprise.css' %}">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background-color: #0F1722;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #F4F5F2;
+    }
+    .scale-auth-wrapper {
+      width: 100%;
+      max-width: 440px;
+      padding: 24px;
+    }
+    .scale-auth-card {
+      background-color: #18212B;
+      border: 1px solid #2B384A;
+      border-radius: 8px;
+      padding: 36px 32px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    }
+    .scale-auth-header {
+      margin-bottom: 28px;
+      text-align: center;
+    }
+    .scale-brand-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .scale-brand-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #FFFFFF;
+    }
+    .scale-brand-tagline {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #8C9BAE;
+      margin-bottom: 6px;
+    }
+    .scale-auth-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      background-color: rgba(79, 95, 199, 0.15);
+      border: 1px solid rgba(79, 95, 199, 0.35);
+      color: #8D99E8;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    .scale-form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+    .scale-form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #C2CEDA;
+      margin-bottom: 8px;
+      letter-spacing: 0.01em;
+    }
+    .scale-input-auth {
+      width: 100%;
+      box-sizing: border-box;
+      background-color: #0F1722;
+      border: 1px solid #344458;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #FFFFFF;
+      outline: none;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      font-family: inherit;
+    }
+    .scale-input-auth:focus {
+      border-color: #4F5FC7;
+      box-shadow: 0 0 0 2px rgba(79, 95, 199, 0.25);
+    }
+    .scale-submit-btn {
+      width: 100%;
+      padding: 11px 16px;
+      background-color: #4F5FC7;
+      border: 1px solid #4F5FC7;
+      color: #FFFFFF;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .scale-submit-btn:hover {
+      background-color: #4352B3;
+    }
+    .scale-credential-hint {
+      margin-top: 24px;
+      background-color: rgba(33, 45, 60, 0.7);
+      border: 1px solid #2B384A;
+      border-radius: 6px;
+      padding: 12px 14px;
+      font-size: 11px;
+      color: #8C9BAE;
+      line-height: 1.5;
+    }
+    .scale-credential-hint strong {
+      color: #C2CEDA;
+    }
+    .scale-credential-hint code {
+      font-family: 'JetBrains Mono', monospace;
+      background-color: #0F1722;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #E2E8F0;
+      border: 1px solid #2B384A;
+    }
+    .scale-alert {
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-align: left;
+    }
+    .scale-alert-error {
+      background-color: rgba(220, 38, 38, 0.15);
+      border: 1px solid rgba(220, 38, 38, 0.35);
+      color: #F87171;
+    }
+    .scale-alert-success {
+      background-color: rgba(22, 163, 74, 0.15);
+      border: 1px solid rgba(22, 163, 74, 0.35);
+      color: #4ADE80;
+    }
+    .scale-auth-footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 11px;
+      color: #64748B;
+    }
+  </style>
+</head>
+<body>
+  <div class="scale-auth-wrapper">
+    <div class="scale-auth-card">
+      <div class="scale-auth-header">
+        <div class="scale-brand-logo">
+          <div style="width: 28px; height: 28px; background-color: #4F5FC7; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: #FFFFFF;">
+            S
+          </div>
+          <span class="scale-brand-title">SCALE.Core</span>
+        </div>
+        <div class="scale-brand-tagline">Supply Chain Analytics & Logistics Engine</div>
+        <div class="scale-auth-badge">One Human Supervises &bull; SCALE.Core Operates</div>
+      </div>
+
+      {% if logged_out %}
+        <div class="scale-alert scale-alert-success">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+          <span>You have been safely signed out. Active session destroyed.</span>
+        </div>
+      {% endif %}
+
+      {% if messages %}
+        {% for message in messages %}
+          {% if message.tags == 'error' %}
+            <div class="scale-alert scale-alert-error">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+              <span>{{ message }}</span>
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+
+      <form method="post" action="{% url 'accounts:login' %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+
+        <div class="scale-form-group">
+          <label class="scale-form-label" for="id_username">Operator Username</label>
+          <input type="text" name="username" id="id_username" class="scale-input-auth" placeholder="e.g. hemanth.supervisor" required autofocus autocomplete="username" value="{{ form.username.value|default:'' }}">
+        </div>
+
+        <div class="scale-form-group">
+          <label class="scale-form-label" for="id_password">Authentication Secret</label>
+          <input type="password" name="password" id="id_password" class="scale-input-auth" placeholder="Enter password" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" class="scale-submit-btn">
+          <span>Authenticate &amp; Launch Console</span>
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </form>
+
+      <div class="scale-credential-hint">
+        <strong>Default Supervisor Profile:</strong><br>
+        Username: <code>hemanth.supervisor</code><br>
+        Password: <code>Password123!</code>
+      </div>
+    </div>
+
+    <div class="scale-auth-footer">
+      <div>SCALE.Core Enterprise Platform &bull; v1.0.0-rc1</div>
+      <div style="margin-top: 4px;">Designed and Developed by Hemanth Kumar H A</div>
+    </div>
+  </div>
+</body>
+</html>
