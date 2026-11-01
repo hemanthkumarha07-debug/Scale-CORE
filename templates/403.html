@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Access Restricted (403) | SCALE.Core{% endblock %}
+{% block breadcrumb %}Security Exception{% endblock %}
+
+{% block content %}
+<div style="max-width: 640px; margin: 40px auto; text-align: center;">
+  <div class="scale-card" style="padding: 40px 32px;">
+    <div style="width: 56px; height: 56px; border-radius: 50%; background-color: rgba(220, 38, 38, 0.1); border: 1px solid rgba(220, 38, 38, 0.25); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; color: #DC2626;">
+      <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15v2m0 0v2m0-2h2m-2 0H10m11-4a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    </div>
+    <h2 style="font-size: 20px; font-weight: 700; margin: 0 0 8px 0; color: var(--scale-text-primary);">Operational Authority Required</h2>
+    <p style="font-size: 13px; color: var(--scale-text-secondary); line-height: 1.6; margin: 0 0 24px 0;">
+      Your account role (<code>{{ user.get_role_display|default:'Unauthenticated' }}</code>) does not hold the necessary supervisor authorization to execute this operational workflow or access this restricted module.
+    </p>
+    <div style="display: flex; gap: 12px; justify-content: center;">
+      <a href="/" class="scale-btn scale-btn-primary">Return to Command Center</a>
+      {% if not user.is_authenticated %}
+        <a href="/accounts/login/" class="scale-btn scale-btn-secondary">Authenticate as Supervisor</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -21,8 +21,8 @@ def enterprise_theme(request):
         {'id': 'intelligence', 'name': 'AI Operations', 'url': '/intelligence/', 'icon': 'psychology', 'manager_only': True},
         {'id': 'automation', 'name': 'Automation Control Centre', 'url': '/automation/', 'icon': 'smart_toy', 'manager_only': True},
         {'id': 'audit', 'name': 'Audit & Security', 'url': '/audit/', 'icon': 'shield', 'manager_only': True},
+        {'id': 'reporting', 'name': 'Reporting Hub', 'url': '/reporting/', 'icon': 'description', 'manager_only': True},
         {'id': 'system_health', 'name': 'System Health', 'url': '/system-health/', 'icon': 'monitor_heart', 'manager_only': True},
-        {'id': 'settings', 'name': 'Settings', 'url': '/settings/', 'icon': 'settings', 'manager_only': True},
     ]
 
     # Filter navigation items based on user authority

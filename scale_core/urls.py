@@ -25,6 +25,9 @@ urlpatterns = [
     # Suppliers Module
     path('suppliers/', include('apps.suppliers.urls', namespace='suppliers')),
     # Logistics Module (Goods Receipt & Shipments)
+    path('logistics/', include('apps.logistics.urls', namespace='logistics')),
+    # Cryptographic Audit Ledger Module
+    path('audit/', include('apps.audit.urls', namespace='audit')),
     # Financial Intelligence Module
     path('finance/', include('apps.finance.urls', namespace='finance')),
     # Notifications Module

@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Logistics & Freight Tracking | SCALE.Core{% endblock %}
+{% block breadcrumb %}Logistics Operations{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+  <div>
+    <h1 style="font-size: 20px; font-weight: 700; margin: 0 0 4px 0; color: var(--scale-text-primary);">Logistics Operations & Freight</h1>
+    <p style="font-size: 13px; color: var(--scale-text-secondary); margin: 0;">Inbound shipment tracking, freight carrier transit metrics, and dock receiving.</p>
+  </div>
+  <div class="scale-badge scale-badge-healthy">
+    Dock Operations: ONLINE
+  </div>
+</div>
+
+<!-- Logistics KPI Row -->
+<div class="scale-grid-3" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 24px;">
+  <div class="scale-card scale-kpi-card">
+    <div class="scale-kpi-label">Active Shipments In-Transit</div>
+    <div class="scale-kpi-value tabular-nums">{{ in_transit_count }}</div>
+    <div class="scale-metadata-text" style="color: var(--scale-healthy-text);">Dispatched by carrier</div>
+  </div>
+
+  <div class="scale-card scale-kpi-card">
+    <div class="scale-kpi-label">Delayed Shipments</div>
+    <div class="scale-kpi-value tabular-nums" style="color: {% if delayed_count > 0 %}#DC2626{% else %}var(--scale-text-primary){% endif %};">{{ delayed_count }}</div>
+    <div class="scale-metadata-text" style="color: var(--scale-text-muted);">Transit exception SLA</div>
+  </div>
+
+  <div class="scale-card scale-kpi-card">
+    <div class="scale-kpi-label">Delivered Inbounds</div>
+    <div class="scale-kpi-value tabular-nums">{{ delivered_count }}</div>
+    <div class="scale-metadata-text" style="color: var(--scale-text-muted);">Completed dock put-aways</div>
+  </div>
+
+  <div class="scale-card scale-kpi-card">
+    <div class="scale-kpi-label">Receiving Discrepancies</div>
+    <div class="scale-kpi-value tabular-nums" style="color: {% if discrepancy_count > 0 %}#D97706{% else %}var(--scale-healthy-text){% endif %};">{{ discrepancy_count }}</div>
+    <div class="scale-metadata-text" style="color: var(--scale-text-muted);">Damaged / quantity variance</div>
+  </div>
+</div>
+
+<!-- Inbound Shipments Table -->
+<div class="scale-card" style="margin-bottom: 24px;">
+  <div style="padding: 16px 20px; border-bottom: 1px solid var(--scale-border-primary); display: flex; justify-content: space-between; align-items: center;">
+    <h3 style="font-size: 14px; font-weight: 600; margin: 0; color: var(--scale-text-primary);">Inbound Shipments Registry</h3>
+    <span class="scale-metadata-text">Carrier Tracking Stream</span>
+  </div>
+  <table class="scale-table">
+    <thead>
+      <tr>
+        <th>Tracking #</th>
+        <th>PO Reference</th>
+        <th>Carrier</th>
+        <th>Dispatch Date</th>
+        <th>Expected Arrival</th>
+        <th>Freight Cost</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in shipments %}
+      <tr>
+        <td style="font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 12px; color: var(--scale-brand-primary);">
+          {{ s.tracking_number }}
+        </td>
+        <td>
+          <a href="/procurement/orders/{{ s.purchase_order.id }}/" style="color: var(--scale-text-primary); text-decoration: none; font-weight: 500;">
+            {{ s.purchase_order.po_number }}
+          </a>
+        </td>
+        <td style="font-weight: 500;">{{ s.carrier_name }}</td>
+        <td class="tabular-nums">{{ s.dispatch_date }}</td>
+        <td class="tabular-nums">{{ s.expected_delivery_date }}</td>
+        <td class="tabular-nums">${{ s.freight_cost|floatformat:2 }}</td>
+        <td>
+          <span class="scale-badge {% if s.status == 'DELIVERED' %}scale-badge-healthy{% elif s.status == 'IN_TRANSIT' %}scale-badge-info{% elif s.is_delayed %}scale-badge-critical{% else %}scale-badge-warning{% endif %}">
+            {{ s.get_status_display }}
+          </span>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7" style="text-align: center; color: var(--scale-text-muted); padding: 32px;">
+          No active shipments registered in the logistics ledger.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

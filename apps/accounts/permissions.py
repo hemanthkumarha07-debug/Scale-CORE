@@ -34,9 +34,10 @@ class IsOperationalUser(permissions.BasePermission):
 class ManagerRequiredMixin(UserPassesTestMixin):
     """
     View mixin requiring Manager role to view the page.
-    Raises PermissionDenied (HTTP 403) for non-managers.
+    Unauthenticated users are smoothly redirected to LOGIN_URL.
+    Authenticated non-managers receive PermissionDenied (HTTP 403).
     """
-    raise_exception = True
+    raise_exception = False
 
     def test_func(self):
         return bool(
@@ -49,8 +50,9 @@ class ManagerRequiredMixin(UserPassesTestMixin):
 class OperationalRequiredMixin(UserPassesTestMixin):
     """
     View mixin requiring authenticated user (Employee or Manager).
+    Unauthenticated users are smoothly redirected to LOGIN_URL.
     """
-    raise_exception = True
+    raise_exception = False
 
     def test_func(self):
         return bool(

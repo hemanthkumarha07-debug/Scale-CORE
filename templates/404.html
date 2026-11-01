@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Resource Not Found (404) | SCALE.Core{% endblock %}
+{% block breadcrumb %}Resource Not Found{% endblock %}
+
+{% block content %}
+<div style="max-width: 640px; margin: 40px auto; text-align: center;">
+  <div class="scale-card" style="padding: 40px 32px;">
+    <div style="width: 56px; height: 56px; border-radius: 50%; background-color: rgba(79, 95, 199, 0.1); border: 1px solid rgba(79, 95, 199, 0.25); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; color: var(--scale-brand-primary);">
+      <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    </div>
+    <h2 style="font-size: 20px; font-weight: 700; margin: 0 0 8px 0; color: var(--scale-text-primary);">Subsystem Route Not Found</h2>
+    <p style="font-size: 13px; color: var(--scale-text-secondary); line-height: 1.6; margin: 0 0 24px 0;">
+      The requested endpoint or resource is unavailable or has not been registered in the operational route directory.
+    </p>
+    <div style="display: flex; gap: 12px; justify-content: center;">
+      <a href="/" class="scale-btn scale-btn-primary">Return to Command Center</a>
+      <a href="/system-health/" class="scale-btn scale-btn-secondary">Check System Health</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

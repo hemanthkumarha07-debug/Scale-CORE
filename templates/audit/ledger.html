@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Cryptographic Audit Ledger | SCALE.Core{% endblock %}
+{% block breadcrumb %}Audit & Security{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+  <div>
+    <h1 style="font-size: 20px; font-weight: 700; margin: 0 0 4px 0; color: var(--scale-text-primary);">Cryptographic Audit Ledger</h1>
+    <p style="font-size: 13px; color: var(--scale-text-secondary); margin: 0;">Append-only SHA-256 hash-chained immutable security and mutation log.</p>
+  </div>
+  <div>
+    {% if integrity.tampering_detected %}
+      <div class="scale-badge scale-badge-critical">
+        INTEGRITY: CORRUPTED (TAMPERING DETECTED)
+      </div>
+    {% else %}
+      <div class="scale-badge scale-badge-healthy">
+        CHAIN INTEGRITY: 100% VALID
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Integrity Verification Banner -->
+<div class="scale-card" style="padding: 20px 24px; margin-bottom: 24px; background: {% if integrity.tampering_detected %}rgba(220, 38, 38, 0.05){% else %}rgba(22, 163, 74, 0.05){% endif %}; border-left: 4px solid {% if integrity.tampering_detected %}#DC2626{% else %}#16A34A{% endif %};">
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <div style="font-weight: 600; font-size: 14px; color: var(--scale-text-primary); margin-bottom: 4px;">
+        {{ integrity.message }}
+      </div>
+      <div class="scale-metadata-text">
+        Genesis Hash: <code style="font-family: 'JetBrains Mono', monospace; font-size: 11px;">{{ integrity.genesis_hash|default:'0000000000000000...'|slice:':24' }}...</code> &bull;
+        Verified Nodes: <strong class="tabular-nums">{{ integrity.verified_records_count }}</strong> records checked
+      </div>
+    </div>
+    <div>
+      <span class="scale-badge {% if integrity.tampering_detected %}scale-badge-critical{% else %}scale-badge-healthy{% endif %}">
+        SHA-256 Verified
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Audit Log Stream Table -->
+<div class="scale-card">
+  <div style="padding: 16px 20px; border-bottom: 1px solid var(--scale-border-primary); display: flex; justify-content: space-between; align-items: center;">
+    <h3 style="font-size: 14px; font-weight: 600; margin: 0; color: var(--scale-text-primary);">Cryptographic Hash-Chained Events</h3>
+    <span class="scale-metadata-text">Immutable Audit Stream</span>
+  </div>
+  <table class="scale-table">
+    <thead>
+      <tr>
+        <th>Timestamp (UTC)</th>
+        <th>Event Type</th>
+        <th>Actor</th>
+        <th>Target Entity</th>
+        <th>Source IP</th>
+        <th>SHA-256 Hash Chaining</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td class="tabular-nums" style="font-size: 12px; color: var(--scale-text-secondary); white-space: nowrap;">
+          {{ r.timestamp|date:"Y-m-d H:i:s" }}
+        </td>
+        <td>
+          <span class="scale-badge scale-badge-info" style="font-family: 'JetBrains Mono', monospace; font-size: 11px;">
+            {{ r.event_type }}
+          </span>
+        </td>
+        <td style="font-weight: 500;">
+          {{ r.actor_username }} <span class="scale-metadata-text">({{ r.actor_role }})</span>
+        </td>
+        <td>
+          <span style="font-weight: 500;">{{ r.entity_type }}</span>
+          <span style="color: var(--scale-text-muted); font-size: 11px;">#{{ r.entity_id|slice:':8' }}</span>
+        </td>
+        <td class="tabular-nums" style="font-size: 12px; color: var(--scale-text-muted);">
+          {{ r.source_ip|default:'127.0.0.1' }}
+        </td>
+        <td>
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.4;">
+            <div style="color: var(--scale-text-muted);">prev: {{ r.previous_hash|slice:':12' }}...</div>
+            <div style="color: var(--scale-brand-primary); font-weight: 600;">curr: {{ r.current_hash|slice:':12' }}...</div>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" style="text-align: center; color: var(--scale-text-muted); padding: 32px;">
+          Genesis state. No audit ledger entries recorded yet.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
