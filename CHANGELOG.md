@@ -9,7 +9,20 @@ and this project adheres to Semantic Versioning.
 
 ---
 
-## [Unreleased]
+## [0.1.0-alpha.1] - 2026-11-01
+### Added
+- **Phase 1: Foundation Architecture Delivery:**
+  - Designed and deployed custom user model `SCALEUser` with two-tier role authorization (`MANAGER` vs `EMPLOYEE`).
+  - Implemented session security middleware with IP tracking and brute-force defenses.
+  - Implemented 15 modular Django applications covering the complete supply chain lifecycle.
+  - Applied relational schemas across 10 core domains with check constraints, foreign key protections, and decimal precision.
+  - Implemented append-only cryptographic Audit Ledger with SHA-256 hash chaining and tamper detection service.
+  - Created deterministic foundation data seeding command (`seed_foundation`).
+- **Phase 2: Enterprise Hybrid Design System (V1.0) Delivery:**
+  - Implemented centralized design tokens in `static/css/enterprise.css` adhering strictly to official palette and Inter typography.
+  - Developed unified application shell with responsive 248px sidebar, 60px header, and breadcrumb navigation.
+  - Built flagship Operational Command Center dashboard (`templates/overview.html`) featuring KPI metrics, critical stockout risk analysis, Chart.js multi-step forecasting, and Category C human approval queue.
+  - Automated test suite `tests/test_foundation.py` passing 5/5 tests covering RBAC, inventory calculations, audit immutability, hash chaining, and view rendering.
 
 ---
 

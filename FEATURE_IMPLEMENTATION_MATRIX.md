@@ -24,12 +24,12 @@ In strict compliance with **Part 3.4 and Part 30 (Rule 21)** of the Master Speci
 |---|---|---|---|---|---|---|---|---|
 | **F001** | Codebase Inspection & Baseline | Part 3 | Phase 0 | A | Architecture Audit Engine | N/A (CLI / Docs) | System Administrator | **VERIFIED** |
 | **F002** | Git VCS Checkpoint & .gitignore | Part 3 | Phase 0 | A | Git Version Control | N/A | System Administrator | **VERIFIED** |
-| **F003** | Architectural Documentation Suite | Part 3.4 | Phase 0 | A | Documentation System | Root Markdown Docs | Public / Developer | **IN_PROGRESS** |
+| **F003** | Architectural Documentation Suite | Part 3.4 | Phase 0 | A | Documentation System | Root Markdown Docs | Public / Developer | **VERIFIED** |
 | **F004** | Python 3.11 + Django 5 + TF Bridge | Part 4 | Phase 0 | A | Runtime Environment | `manage.py check` | System Administrator | **VERIFIED** |
-| **F005** | Custom User (`SCALEUser`) & Roles | Part 6 | Phase 1 | C | `accounts.services.AuthService` | `/accounts/login/`, `/api/auth/` | Session + Strict RBAC | **PLANNED** |
-| **F006** | Session Security & Brute-Force Shield | Part 6.3 | Phase 1 | A | `accounts.middleware.SecurityMiddleware` | Global Middleware | Auto-throttle IP | **PLANNED** |
-| **F007** | Enterprise Hybrid Shell & Design Tokens | Part 17 | Phase 2 | N/A | `core.context_processors.theme` | Global Templates | Authenticated | **PLANNED** |
-| **F008** | Global Sidebar & Responsive Header | Part 17.4 | Phase 2 | N/A | `templates/components/shell.html` | All Authenticated Views | Role-adaptive UI | **PLANNED** |
+| **F005** | Custom User (`SCALEUser`) & Roles | Part 6 | Phase 1 | C | `accounts.services.AuthService` | `/accounts/login/`, `/api/auth/` | Session + Strict RBAC | **VERIFIED** |
+| **F006** | Session Security & Brute-Force Shield | Part 6.3 | Phase 1 | A | `accounts.middleware.SecurityMiddleware` | Global Middleware | Auto-throttle IP | **VERIFIED** |
+| **F007** | Enterprise Hybrid Shell & Design Tokens | Part 17 | Phase 2 | N/A | `core.context_processors.theme` | Global Templates | Authenticated | **VERIFIED** |
+| **F008** | Global Sidebar & Responsive Header | Part 17.4 | Phase 2 | N/A | `templates/components/shell.html` | All Authenticated Views | Role-adaptive UI | **VERIFIED** |
 | **F009** | Product Master & Warehouse Inventory | Part 8.1 | Phase 3 | A | `inventory.services.StockService` | `/inventory/products/`, `/api/inventory/` | Manager Full, Emp Read | **PLANNED** |
 | **F010** | Stock Movement Ledger & Availability | Part 8.2 | Phase 3 | A | `inventory.services.MovementService` | `/inventory/movements/` | Manager Full, Emp Create | **PLANNED** |
 | **F011** | ABC/XYZ Demand Variability Analysis | Part 8.4 | Phase 3 | A | `inventory.services.ClassificationService`| `/inventory/classification/`| Manager Only | **PLANNED** |

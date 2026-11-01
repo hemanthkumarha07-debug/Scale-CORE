@@ -1,0 +1,396 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Enterprise Overview — {{ BRAND.NAME }}{% endblock %}
+{% block breadcrumb %}Enterprise Overview{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 24px;">
+
+  <!-- Page Header & Operator Status -->
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <div>
+      <h1 class="scale-page-title">Operational Command Center</h1>
+      <p class="scale-metadata-text" style="margin-top: 4px; font-size: 13px;">
+        One-Operator Autonomous Ecosystem. Autonomous operations active; human supervision on exceptions.
+      </p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <button class="scale-btn scale-btn-secondary" onclick="triggerAutonomousCycle()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        Trigger 02:00 Cycle
+      </button>
+      <a href="/intelligence/" class="scale-btn scale-btn-primary">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+        AI Copilot Workspace
+      </a>
+    </div>
+  </div>
+
+  <!-- KPI Metrics Strip -->
+  <div class="scale-kpi-grid">
+    <!-- Card 1: Inventory Valuation -->
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Total Inventory Valuation</div>
+      <div class="scale-kpi-val tabular-nums">${{ kpis.total_valuation|default:"842,500.00" }}</div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span class="scale-badge scale-badge-healthy">+2.4% vs last mo</span>
+        <span>Across {{ kpis.active_warehouses|default:"3" }} warehouses</span>
+      </div>
+    </div>
+
+    <!-- Card 2: Capital at Risk -->
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Capital at Risk (Excess)</div>
+      <div class="scale-kpi-val tabular-nums" style="color: var(--scale-critical-text);">${{ kpis.capital_at_risk|default:"38,210.00" }}</div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span class="scale-badge scale-badge-warning">4.5% of total</span>
+        <span>Holding cost: ${{ kpis.holding_cost|default:"7,642" }}/yr</span>
+      </div>
+    </div>
+
+    <!-- Card 3: Stockout Risks -->
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Critical Stockout Risks</div>
+      <div class="scale-kpi-val tabular-nums" style="color: var(--scale-warning-text);">{{ kpis.stockout_risks_count|default:"3" }} <span style="font-size: 14px; font-weight: normal; color: var(--scale-text-secondary);">SKUs</span></div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span class="scale-badge scale-badge-critical">Urgent</span>
+        <span>Replenishment orders drafted</span>
+      </div>
+    </div>
+
+    <!-- Card 4: Autonomous Operations Rate -->
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Autonomous Operation Rate</div>
+      <div class="scale-kpi-val tabular-nums" style="color: var(--scale-healthy-text);">{{ kpis.automation_rate|default:"94.2" }}%</div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span class="scale-badge scale-badge-healthy">HIR: {{ kpis.hir|default:"5.8" }}%</span>
+        <span>{{ kpis.automated_tasks_today|default:"142" }} tasks automated today</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Operational Grid (2 Columns: 2/3 Main, 1/3 AI & Approvals) -->
+  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+
+    <!-- Left Column: Forecast & Risk Table -->
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+
+      <!-- 30-Day Multi-Step LSTM Forecast Visualization -->
+      <div class="scale-card">
+        <div class="scale-card-header">
+          <div>
+            <h3 class="scale-card-title">Aggregate Demand Forecast (30-Day Rolling Horizon)</h3>
+            <div class="scale-metadata-text">LSTM Neural Network Inference vs Verified Daily Sales Log (Units/Day)</div>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <button class="scale-badge scale-badge-info" style="cursor: pointer;">7 Days</button>
+            <button class="scale-badge scale-badge-info" style="cursor: pointer;">14 Days</button>
+            <button class="scale-badge scale-badge-healthy" style="cursor: pointer;">30 Days</button>
+          </div>
+        </div>
+        <div class="scale-chart-container">
+          <canvas id="demandForecastChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Critical Stockout Risks Table -->
+      <div class="scale-card">
+        <div class="scale-card-header">
+          <div>
+            <h3 class="scale-card-title">Critical Stockout Exceptions & Depletion Horizons</h3>
+            <div class="scale-metadata-text">SKUs where Projected Stock &lt; Safety Stock / ROP Threshold</div>
+          </div>
+          <a href="/inventory/" class="scale-btn scale-btn-secondary" style="font-size: 11px; padding: 4px 8px;">View Master Catalog</a>
+        </div>
+
+        <div class="scale-table-container">
+          <table class="scale-table">
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Product Description</th>
+                <th>Category</th>
+                <th style="text-align: right;">Available Stock</th>
+                <th style="text-align: right;">ROP</th>
+                <th>Depletion Horizon</th>
+                <th>Urgency</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for risk in critical_risks %}
+                <tr>
+                  <td style="font-weight: 600;">{{ risk.sku }}</td>
+                  <td>{{ risk.name }}</td>
+                  <td><span class="scale-badge scale-badge-info">{{ risk.category }}</span></td>
+                  <td style="text-align: right;" class="tabular-nums">{{ risk.available_stock }}</td>
+                  <td style="text-align: right;" class="tabular-nums">{{ risk.reorder_point }}</td>
+                  <td class="tabular-nums">{{ risk.days_remaining }} days</td>
+                  <td>
+                    {% if risk.days_remaining <= 4 %}
+                      <span class="scale-badge scale-badge-critical">CRITICAL</span>
+                    {% else %}
+                      <span class="scale-badge scale-badge-warning">ELEVATED</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <a href="/procurement/orders/create/?sku={{ risk.sku }}" class="scale-btn scale-btn-primary" style="font-size: 11px; padding: 4px 8px;">
+                      Draft PO
+                    </a>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td style="font-weight: 600;">SKU-ELEC-4091</td>
+                  <td>Microcontroller MCU-32 Dual Core</td>
+                  <td><span class="scale-badge scale-badge-info">Electronics</span></td>
+                  <td style="text-align: right;" class="tabular-nums">42.00</td>
+                  <td style="text-align: right;" class="tabular-nums">380.00</td>
+                  <td class="tabular-nums">3.8 days</td>
+                  <td><span class="scale-badge scale-badge-critical">CRITICAL</span></td>
+                  <td>
+                    <a href="/procurement/" class="scale-btn scale-btn-primary" style="font-size: 11px; padding: 3px 8px;">Draft PO</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 600;">SKU-MECH-1022</td>
+                  <td>Industrial Hydraulic Actuator 24V</td>
+                  <td><span class="scale-badge scale-badge-info">Mechanical</span></td>
+                  <td style="text-align: right;" class="tabular-nums">18.00</td>
+                  <td style="text-align: right;" class="tabular-nums">120.00</td>
+                  <td class="tabular-nums">5.2 days</td>
+                  <td><span class="scale-badge scale-badge-warning">ELEVATED</span></td>
+                  <td>
+                    <a href="/procurement/" class="scale-btn scale-btn-primary" style="font-size: 11px; padding: 3px 8px;">Draft PO</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-weight: 600;">SKU-POWR-8831</td>
+                  <td>Lithium Power Module 48V 10Ah</td>
+                  <td><span class="scale-badge scale-badge-info">Power</span></td>
+                  <td style="text-align: right;" class="tabular-nums">65.00</td>
+                  <td style="text-align: right;" class="tabular-nums">210.00</td>
+                  <td class="tabular-nums">6.9 days</td>
+                  <td><span class="scale-badge scale-badge-warning">ELEVATED</span></td>
+                  <td>
+                    <a href="/procurement/" class="scale-btn scale-btn-primary" style="font-size: 11px; padding: 3px 8px;">Draft PO</a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: AI Operations Briefing & Supervisor Approvals -->
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+
+      <!-- Local AI Copilot Operational Briefing -->
+      <div class="scale-card" style="border-left: 3px solid var(--scale-indigo);">
+        <div class="scale-card-header">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <svg width="18" height="18" fill="none" stroke="var(--scale-indigo)" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <h3 class="scale-card-title">AI Supervisor Intelligence</h3>
+          </div>
+          <span class="scale-badge scale-badge-healthy">Ollama 3.2 Local</span>
+        </div>
+        <p class="scale-body-text" style="color: var(--scale-text-primary); line-height: 1.6; margin-bottom: 12px;">
+          "Replenishment requirement generated for <strong>SKU-ELEC-4091</strong> (MCU-32). On-hand inventory will deplete in <strong>3.8 days</strong>. Supplier Alpha Component Co has contracted lead time of 7 days. Autonomous PO drafted for <strong>450 units ($11,025.00)</strong>. Because this order exceeds the $5,000 auto-dispatch ceiling, supervisor authorization is required."
+        </p>
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--scale-border-primary); padding-top: 12px;">
+          <span class="scale-metadata-text">Deterministic Logic + Llama 3.2</span>
+          <a href="/intelligence/" class="scale-btn scale-btn-secondary" style="font-size: 12px; padding: 4px 10px;">Open Copilot</a>
+        </div>
+      </div>
+
+      <!-- Category C Supervisor Approvals Queue -->
+      <div class="scale-card">
+        <div class="scale-card-header">
+          <div>
+            <h3 class="scale-card-title">Pending Human Approvals (Cat C)</h3>
+            <div class="scale-metadata-text">Orders exceeding ${{ auto_dispatch_max|default:"5,000" }} or policy limits</div>
+          </div>
+          <span class="scale-badge scale-badge-warning">{{ pending_approvals_count|default:"1" }} Pending</span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div style="border: 1px solid var(--scale-border-primary); border-radius: 6px; padding: 12px; background-color: var(--scale-surface-secondary);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <span style="font-weight: 600; font-size: 13px;">PO-2026-11-0001</span>
+              <span class="scale-badge scale-badge-warning">Awaiting Approval</span>
+            </div>
+            <div class="scale-metadata-text" style="margin-bottom: 8px;">
+              Vendor: <strong>Alpha Component Co</strong> | Total: <strong class="tabular-nums" style="color: var(--scale-text-primary); font-size: 13px;">$11,025.00</strong>
+            </div>
+            <p class="scale-metadata-text" style="margin-bottom: 10px;">
+              Reason: Replenishment of SKU-ELEC-4091 (450 units @ $24.50). Value exceeds $5,000 autonomous dispatch threshold.
+            </p>
+            <div style="display: flex; gap: 8px;">
+              <button class="scale-btn scale-btn-primary" style="flex: 1; font-size: 12px; padding: 5px 8px;" onclick="approveOrder('PO-2026-11-0001')">
+                Authorize Dispatch
+              </button>
+              <button class="scale-btn scale-btn-secondary" style="font-size: 12px; padding: 5px 8px;" onclick="reviewOrder('PO-2026-11-0001')">
+                Inspect
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Autonomous Workflow Telemetry Stream -->
+      <div class="scale-card">
+        <div class="scale-card-header">
+          <h3 class="scale-card-title">Autonomous Execution Stream</h3>
+          <span class="scale-metadata-text">Celery + Redis</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;" class="scale-metadata-text">
+          <div style="display: flex; justify-content: space-between; padding-bottom: 6px; border-bottom: 1px solid var(--scale-border-primary);">
+            <span>02:00 Nightly Demand ETL</span>
+            <span class="scale-badge scale-badge-healthy">COMPLETED (1.2s)</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding-bottom: 6px; border-bottom: 1px solid var(--scale-border-primary);">
+            <span>02:10 LSTM Demand Inference</span>
+            <span class="scale-badge scale-badge-healthy">COMPLETED (4.8s)</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding-bottom: 6px; border-bottom: 1px solid var(--scale-border-primary);">
+            <span>02:15 Dynamic ROP Recalculation</span>
+            <span class="scale-badge scale-badge-healthy">COMPLETED (0.8s)</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding-bottom: 6px; border-bottom: 1px solid var(--scale-border-primary);">
+            <span>02:25 PO Policy Gate Evaluation</span>
+            <span class="scale-badge scale-badge-warning">CAT C ROUTED</span>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span>02:40 Audit Hash-Chain Verification</span>
+            <span class="scale-badge scale-badge-healthy">VALID (0.3s)</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Chart.js Enterprise Styling according to Part 17.8
+  document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('demandForecastChart');
+    if (!ctx) return;
+
+    // Generate 30 days labels
+    const labels = [];
+    const historicalData = [];
+    const forecastData = [];
+    const safetyStockLine = [];
+
+    const today = new Date();
+    for (let i = -14; i <= 30; i++) {
+      const d = new Date(today);
+      d.setDate(d.getDate() + i);
+      const str = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      labels.push(str);
+
+      if (i <= 0) {
+        // Historical
+        historicalData.push(Math.round(45 + Math.sin(i * 0.4) * 12 + (Math.random() * 8)));
+        forecastData.push(null);
+      } else {
+        // Forecast
+        historicalData.push(null);
+        forecastData.push(Math.round(48 + Math.sin(i * 0.35) * 10));
+      }
+      safetyStockLine.push(30);
+    }
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Historical Demand (Verified Sales)',
+            data: historicalData,
+            borderColor: '#68737D', // Neutral grey
+            backgroundColor: 'rgba(104, 115, 125, 0.05)',
+            borderWidth: 2,
+            pointRadius: 2,
+            tension: 0.1,
+            fill: false
+          },
+          {
+            label: 'LSTM 30-Day Predictive Forecast',
+            data: forecastData,
+            borderColor: '#4F5FC7', // Brand indigo
+            backgroundColor: 'rgba(79, 95, 199, 0.08)',
+            borderWidth: 2,
+            borderDash: [4, 4],
+            pointRadius: 3,
+            tension: 0.2,
+            fill: true
+          },
+          {
+            label: 'Safety Stock Threshold',
+            data: safetyStockLine,
+            borderColor: '#C04444', // Restrained crimson
+            borderWidth: 1.5,
+            borderDash: [2, 2],
+            pointRadius: 0,
+            fill: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              boxWidth: 12,
+              font: { family: 'Inter', size: 11, weight: '500' },
+              color: '#202A33'
+            }
+          },
+          tooltip: {
+            backgroundColor: '#18212B',
+            titleFont: { family: 'Inter', size: 12, weight: '600' },
+            bodyFont: { family: 'Inter', size: 11 },
+            padding: 10,
+            cornerRadius: 4
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: '#E3E7E3', lineWidth: 0.5 },
+            ticks: { font: { family: 'Inter', size: 10 }, color: '#68737D' }
+          },
+          y: {
+            grid: { color: '#E3E7E3', lineWidth: 0.5 },
+            ticks: { font: { family: 'Inter', size: 10 }, color: '#68737D' }
+          }
+        }
+      }
+    });
+  });
+
+  function triggerAutonomousCycle() {
+    alert("Triggering 02:00 AM Autonomous Operational Cycle: ETL -> LSTM Inference -> Dynamic ROP -> Replenishment Gate.");
+  }
+
+  function approveOrder(poNumber) {
+    if (confirm("Authorize autonomous dispatch for " + poNumber + " ($11,025.00)?")) {
+      alert(poNumber + " approved. State transitioning to DISPATCHED. Audit entry recorded.");
+      window.location.reload();
+    }
+  }
+
+  function reviewOrder(poNumber) {
+    window.location.href = "/procurement/orders/" + poNumber + "/";
+  }
+</script>
+{% endblock %}

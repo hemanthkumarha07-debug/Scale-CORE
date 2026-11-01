@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ BRAND.NAME }} — {{ BRAND.FULL_NAME }}{% endblock %}</title>
+
+  <!-- Inter Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Enterprise Hybrid Design System Stylesheet -->
+  <link rel="stylesheet" href="{% static 'css/enterprise.css' %}">
+
+  <!-- Chart.js for Visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <div class="scale-app-shell">
+    <!-- Mandatory Sidebar Navigation (248px) -->
+    {% include 'components/sidebar.html' %}
+
+    <!-- Main Operational Workspace Shell -->
+    <div class="scale-main-wrapper">
+      <!-- Enterprise Header (60px) -->
+      {% include 'components/header.html' %}
+
+      <!-- Page Workspace Canvas -->
+      <main class="scale-workspace">
+        {% if messages %}
+          <div style="margin-bottom: 20px;">
+            {% for message in messages %}
+              <div class="scale-badge scale-badge-{{ message.tags|default:'info' }}" style="display: block; padding: 10px 14px; margin-bottom: 8px;">
+                {{ message }}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+      </main>
+
+      <!-- Attribution Footer -->
+      <footer style="padding: 16px 24px; border-top: 1px solid var(--scale-border-primary); background-color: var(--scale-surface-primary); display: flex; align-items: center; justify-content: space-between;" class="scale-metadata-text">
+        <div>
+          <strong>{{ BRAND.NAME }}</strong> — {{ BRAND.FULL_NAME }} | {{ BRAND.TAGLINE }}
+        </div>
+        <div>
+          Designed & Developed by <strong>{{ BRAND.AUTHOR }}</strong>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

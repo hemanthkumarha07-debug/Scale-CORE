@@ -1,0 +1,461 @@
+/* ==========================================================================
+   SCALE.Core — ENTERPRISE HYBRID DESIGN SYSTEM (V1.0)
+   Designed & Developed by Hemanth Kumar H A
+   ========================================================================== */
+
+:root {
+  /* Surfaces */
+  --scale-sidebar-bg: #18212B;
+  --scale-sidebar-hover: #222D39;
+  --scale-sidebar-active: #2C3A4A;
+  --scale-workspace-bg: #F4F5F2;
+  --scale-surface-primary: #FFFFFF;
+  --scale-surface-secondary: #F8F9F7;
+  --scale-border-primary: #E3E7E3;
+  --scale-border-secondary: #D1D7D1;
+
+  /* Brand Colors */
+  --scale-indigo: #4F5FC7;
+  --scale-indigo-hover: #414FAF;
+  --scale-indigo-light: #EEF0FC;
+  --scale-indigo-subtle: #F5F6FE;
+
+  /* Typography Colors */
+  --scale-text-primary: #202A33;
+  --scale-text-secondary: #68737D;
+  --scale-text-muted: #8E99A4;
+  --scale-text-sidebar: #CBD5E1;
+  --scale-text-sidebar-muted: #8E9BA8;
+
+  /* Semantic Alert Colors */
+  --scale-critical-bg: #FFF0F0;
+  --scale-critical-border: #F8D7DA;
+  --scale-critical-text: #C04444;
+
+  --scale-warning-bg: #FFF6E7;
+  --scale-warning-border: #FDEED9;
+  --scale-warning-text: #A66B18;
+
+  --scale-healthy-bg: #EDF6EF;
+  --scale-healthy-border: #D4EDDA;
+  --scale-healthy-text: #387B50;
+
+  --scale-info-bg: #EEF2FA;
+  --scale-info-border: #D6E4FF;
+  --scale-info-text: #4969A5;
+
+  /* Layout Constants */
+  --scale-sidebar-width: 248px;
+  --scale-sidebar-collapsed: 72px;
+  --scale-header-height: 60px;
+  --scale-card-radius: 8px;
+}
+
+/* Base Reset & Typography */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--scale-text-primary);
+  background-color: var(--scale-workspace-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Tabular Numerals for Numerical Data */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Typography Hierarchy */
+h1, .scale-page-title {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--scale-text-primary);
+  letter-spacing: -0.015em;
+}
+
+h2, .scale-section-title {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--scale-text-primary);
+}
+
+h3, .scale-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--scale-text-primary);
+}
+
+.scale-body-text {
+  font-size: 13px;
+  color: var(--scale-text-primary);
+}
+
+.scale-metadata-text {
+  font-size: 11px;
+  color: var(--scale-text-secondary);
+}
+
+.scale-kpi-val {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--scale-text-primary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* Layout Shell */
+.scale-app-shell {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Sidebar */
+.scale-sidebar {
+  width: var(--scale-sidebar-width);
+  background-color: var(--scale-sidebar-bg);
+  color: var(--scale-text-sidebar);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.scale-sidebar-header {
+  height: var(--scale-header-height);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.scale-sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #FFFFFF;
+}
+
+.scale-sidebar-brand-badge {
+  width: 32px;
+  height: 32px;
+  background-color: var(--scale-indigo);
+  color: #FFFFFF;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: -0.5px;
+}
+
+.scale-sidebar-brand-name {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+}
+
+.scale-sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.scale-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: var(--scale-text-sidebar);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.scale-nav-link:hover {
+  background-color: var(--scale-sidebar-hover);
+  color: #FFFFFF;
+}
+
+.scale-nav-link.active {
+  background-color: var(--scale-sidebar-active);
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.scale-nav-icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.85;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scale-sidebar-footer {
+  padding: 14px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.scale-user-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.scale-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--scale-sidebar-active);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* Main Content Area */
+.scale-main-wrapper {
+  flex: 1;
+  margin-left: var(--scale-sidebar-width);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Header */
+.scale-header {
+  height: var(--scale-header-height);
+  background-color: var(--scale-surface-primary);
+  border-bottom: 1px solid var(--scale-border-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+}
+
+.scale-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--scale-text-secondary);
+}
+
+.scale-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Workspace Canvas */
+.scale-workspace {
+  padding: 24px;
+  flex: 1;
+}
+
+/* Cards & Surfaces */
+.scale-card {
+  background-color: var(--scale-surface-primary);
+  border: 1px solid var(--scale-border-primary);
+  border-radius: var(--scale-card-radius);
+  padding: 20px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.scale-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+/* KPI Metrics Grid */
+.scale-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.scale-kpi-card {
+  background-color: var(--scale-surface-primary);
+  border: 1px solid var(--scale-border-primary);
+  border-radius: var(--scale-card-radius);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scale-kpi-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--scale-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.scale-kpi-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+
+/* Tables */
+.scale-table-container {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--scale-border-primary);
+  border-radius: var(--scale-card-radius);
+  background-color: var(--scale-surface-primary);
+}
+
+.scale-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 12px;
+}
+
+.scale-table th {
+  background-color: var(--scale-surface-secondary);
+  color: var(--scale-text-secondary);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--scale-border-primary);
+}
+
+.scale-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--scale-border-primary);
+  color: var(--scale-text-primary);
+  vertical-align: middle;
+}
+
+.scale-table tbody tr:hover {
+  background-color: #FAFAFA;
+}
+
+/* Badges & Status Indicators */
+.scale-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.scale-badge-critical {
+  background-color: var(--scale-critical-bg);
+  color: var(--scale-critical-text);
+  border: 1px solid var(--scale-critical-border);
+}
+
+.scale-badge-warning {
+  background-color: var(--scale-warning-bg);
+  color: var(--scale-warning-text);
+  border: 1px solid var(--scale-warning-border);
+}
+
+.scale-badge-healthy {
+  background-color: var(--scale-healthy-bg);
+  color: var(--scale-healthy-text);
+  border: 1px solid var(--scale-healthy-border);
+}
+
+.scale-badge-info {
+  background-color: var(--scale-info-bg);
+  color: var(--scale-info-text);
+  border: 1px solid var(--scale-info-border);
+}
+
+/* Buttons */
+.scale-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.scale-btn-primary {
+  background-color: var(--scale-indigo);
+  color: #FFFFFF;
+}
+
+.scale-btn-primary:hover {
+  background-color: var(--scale-indigo-hover);
+}
+
+.scale-btn-secondary {
+  background-color: #FFFFFF;
+  color: var(--scale-text-primary);
+  border-color: var(--scale-border-primary);
+}
+
+.scale-btn-secondary:hover {
+  background-color: var(--scale-surface-secondary);
+}
+
+.scale-btn-danger {
+  background-color: var(--scale-critical-bg);
+  color: var(--scale-critical-text);
+  border-color: var(--scale-critical-border);
+}
+
+.scale-btn-danger:hover {
+  background-color: #FFE5E5;
+}
+
+/* Charts Container */
+.scale-chart-container {
+  position: relative;
+  width: 100%;
+  height: 280px;
+}
