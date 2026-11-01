@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Demand Forecasting & Deep Learning — {{ BRAND.NAME }}{% endblock %}
+{% block breadcrumb %}Demand Forecasting / Deep Learning Engine{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 20px;">
+
+  <!-- Header & SKU Selector -->
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <div>
+      <h1 class="scale-page-title">Demand Forecasting & Dynamic ROP Engine</h1>
+      <p class="scale-metadata-text" style="margin-top: 4px;">
+        TensorFlow multi-step LSTM neural network inference evaluated against statistical moving average and exponential smoothing benchmarks.
+      </p>
+    </div>
+    <form method="get" style="display: flex; align-items: center; gap: 8px;">
+      <label for="skuSelect" class="scale-metadata-text" style="font-weight: 600;">Select SKU:</label>
+      <select id="skuSelect" name="sku" onchange="this.form.submit()" style="padding: 6px 12px; border: 1px solid var(--scale-border-primary); border-radius: 6px; font-size: 13px; font-weight: 500; background-color: #FFFFFF;">
+        {% for p in products %}
+          <option value="{{ p.sku }}" {% if p.sku == selected_product.sku %}selected{% endif %}>
+            {{ p.sku }} — {{ p.name }}
+          </option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+
+  <!-- Dynamic ROP Decision Metrics Strip -->
+  {% if rop_metrics %}
+  <div class="scale-kpi-grid">
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Average Daily Demand ($\bar{D}$)</div>
+      <div class="scale-kpi-val tabular-nums">{{ rop_metrics.average_daily_demand }} <span style="font-size: 13px; font-weight: normal; color: var(--scale-text-secondary);">units/day</span></div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span>Lead Time: {{ rop_metrics.lead_time_days }} days</span>
+      </div>
+    </div>
+
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Statistical Safety Stock ($SS$)</div>
+      <div class="scale-kpi-val tabular-nums">{{ rop_metrics.safety_stock }} <span style="font-size: 13px; font-weight: normal; color: var(--scale-text-secondary);">units</span></div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span class="scale-badge scale-badge-healthy">95% Service Level (Z=1.645)</span>
+      </div>
+    </div>
+
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Dynamic Reorder Point ($ROP$)</div>
+      <div class="scale-kpi-val tabular-nums" style="color: var(--scale-indigo);">{{ rop_metrics.reorder_point }} <span style="font-size: 13px; font-weight: normal; color: var(--scale-text-secondary);">units</span></div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span>$ROP = (\bar{D} \times L) + SS$</span>
+      </div>
+    </div>
+
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Replenishment Requirement</div>
+      <div class="scale-kpi-val tabular-nums" style="color: {% if rop_metrics.is_critical %}var(--scale-critical-text){% else %}var(--scale-healthy-text){% endif %};">
+        {{ rop_metrics.recommended_order_quantity }} <span style="font-size: 13px; font-weight: normal; color: var(--scale-text-secondary);">units</span>
+      </div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span class="scale-badge {% if rop_metrics.is_critical %}scale-badge-critical{% else %}scale-badge-healthy{% endif %}">
+          {{ rop_metrics.days_of_supply }} days supply remaining
+        </span>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Forecast Chart -->
+  <div class="scale-card">
+    <div class="scale-card-header">
+      <div>
+        <h3 class="scale-card-title">{{ selected_product.sku }} — 30-Day Multi-Step Demand Horizon</h3>
+        <div class="scale-metadata-text">Huber Loss Optimized LSTM Network Projections with 95% Confidence Bounds</div>
+      </div>
+      <span class="scale-badge scale-badge-healthy">Model: LSTM-MultiStep-V1</span>
+    </div>
+    <div class="scale-chart-container" style="height: 320px;">
+      <canvas id="forecastDetailChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Benchmarking Table -->
+  <div class="scale-card">
+    <div class="scale-card-header">
+      <div>
+        <h3 class="scale-card-title">Rolling-Origin Model Performance Benchmark</h3>
+        <div class="scale-metadata-text">Cross-validation metrics evaluated across 30-day out-of-sample demand</div>
+      </div>
+      <span class="scale-badge scale-badge-info">Validation Standard: WAPE &le; 0.15</span>
+    </div>
+
+    <div class="scale-table-container">
+      <table class="scale-table">
+        <thead>
+          <tr>
+            <th>Forecasting Architecture</th>
+            <th style="text-align: right;">MAE (Units)</th>
+            <th style="text-align: right;">RMSE</th>
+            <th style="text-align: right;">WAPE (%)</th>
+            <th style="text-align: right;">Forecast Bias</th>
+            <th>Production Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for model_name, metrics in benchmarks.items %}
+            <tr {% if model_name == 'LSTM' %}style="background-color: var(--scale-indigo-subtle); font-weight: 500;"{% endif %}>
+              <td style="font-weight: 600;">
+                {% if model_name == 'LSTM' %}
+                  Deep Learning LSTM (128-64 Units + Dropout)
+                {% elif model_name == 'ExponentialSmoothing' %}
+                  Holt-Winters Exponential Smoothing (&alpha;=0.3)
+                {% else %}
+                  Simple Moving Average (7-Day Rolling)
+                {% endif %}
+              </td>
+              <td style="text-align: right;" class="tabular-nums">{{ metrics.mae }}</td>
+              <td style="text-align: right;" class="tabular-nums">{{ metrics.rmse }}</td>
+              <td style="text-align: right;" class="tabular-nums" style="font-weight: 600;">{{ metrics.wape|floatformat:4 }}</td>
+              <td style="text-align: right;" class="tabular-nums">{{ metrics.bias }}</td>
+              <td>
+                {% if model_name == 'LSTM' %}
+                  <span class="scale-badge scale-badge-healthy">ACTIVE CHAMPION</span>
+                {% else %}
+                  <span class="scale-badge scale-badge-info">BENCHMARK CHALLENGER</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('forecastDetailChart');
+    if (!ctx) return;
+
+    const forecastData = {{ forecast_data|safe }};
+    const labels = forecastData.map(d => d.date);
+    const predicted = forecastData.map(d => d.predicted_demand);
+    const lower = forecastData.map(d => d.confidence_lower);
+    const upper = forecastData.map(d => d.confidence_upper);
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Predicted Daily Demand',
+            data: predicted,
+            borderColor: '#4F5FC7',
+            backgroundColor: 'rgba(79, 95, 199, 0.1)',
+            borderWidth: 2.5,
+            pointRadius: 3,
+            tension: 0.2,
+            fill: false
+          },
+          {
+            label: 'Upper Confidence Bound (95%)',
+            data: upper,
+            borderColor: 'rgba(79, 95, 199, 0.3)',
+            borderWidth: 1,
+            borderDash: [3, 3],
+            pointRadius: 0,
+            fill: '+1',
+            backgroundColor: 'rgba(79, 95, 199, 0.05)'
+          },
+          {
+            label: 'Lower Confidence Bound (95%)',
+            data: lower,
+            borderColor: 'rgba(79, 95, 199, 0.3)',
+            borderWidth: 1,
+            borderDash: [3, 3],
+            pointRadius: 0,
+            fill: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: { boxWidth: 12, font: { family: 'Inter', size: 11 }, color: '#202A33' }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: '#E3E7E3', lineWidth: 0.5 },
+            ticks: { font: { family: 'Inter', size: 10 }, color: '#68737D' }
+          },
+          y: {
+            grid: { color: '#E3E7E3', lineWidth: 0.5 },
+            ticks: { font: { family: 'Inter', size: 10 }, color: '#68737D' }
+          }
+        }
+      }
+    });
+  });
+</script>
+{% endblock %}

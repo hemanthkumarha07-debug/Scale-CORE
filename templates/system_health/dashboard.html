@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}System Health & Observability — {{ BRAND.NAME }}{% endblock %}
+{% block breadcrumb %}System Health & Infrastructure Telemetry{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 20px;">
+
+  <!-- Header -->
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <div>
+      <h1 class="scale-page-title">System Health & Subsystem Observability</h1>
+      <p class="scale-metadata-text" style="margin-top: 4px;">
+        Empirical subsystem probing. Never displays fabricated green indicators. If a probe fails, diagnosis is highlighted immediately.
+      </p>
+    </div>
+    <div>
+      <button class="scale-btn scale-btn-secondary" onclick="window.location.reload()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        Re-run Heartbeat Probes
+      </button>
+    </div>
+  </div>
+
+  <!-- Real-Time Subsystem Telemetry Cards -->
+  <div class="scale-kpi-grid">
+    {% for probe in probes %}
+      <div class="scale-kpi-card" style="border-left: 3px solid {% if probe.status == 'HEALTHY' %}var(--scale-healthy-text){% elif probe.status == 'DEGRADED' %}var(--scale-warning-text){% elif probe.status == 'UNKNOWN' %}var(--scale-info-text){% else %}var(--scale-critical-text){% endif %};">
+        <div class="scale-kpi-label">{{ probe.subsystem }}</div>
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <span class="scale-badge {% if probe.status == 'HEALTHY' %}scale-badge-healthy{% elif probe.status == 'DEGRADED' %}scale-badge-warning{% elif probe.status == 'UNKNOWN' %}scale-badge-info{% else %}scale-badge-critical{% endif %}">
+            {{ probe.status }}
+          </span>
+          <span class="scale-metadata-text tabular-nums">{{ probe.latency_ms|floatformat:1 }}ms</span>
+        </div>
+        <p class="scale-metadata-text" style="margin-top: 8px; line-height: 1.4;">
+          {{ probe.message }}
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Historical Telemetry Probes Log Table -->
+  <div class="scale-card">
+    <div class="scale-card-header">
+      <h3 class="scale-card-title">Heartbeat Telemetry History</h3>
+      <span class="scale-metadata-text">Last 30 automated health checks</span>
+    </div>
+
+    <div class="scale-table-container">
+      <table class="scale-table">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Subsystem</th>
+            <th>Status</th>
+            <th style="text-align: right;">Latency</th>
+            <th>Diagnostic Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in records %}
+            <tr>
+              <td class="tabular-nums scale-metadata-text">{{ r.checked_at|date:"Y-m-d H:i:s" }}</td>
+              <td style="font-weight: 600;">{{ r.get_subsystem_display }}</td>
+              <td>
+                <span class="scale-badge {% if r.status == 'HEALTHY' %}scale-badge-healthy{% elif r.status == 'DEGRADED' %}scale-badge-warning{% elif r.status == 'UNKNOWN' %}scale-badge-info{% else %}scale-badge-critical{% endif %}">
+                  {{ r.status }}
+                </span>
+              </td>
+              <td style="text-align: right;" class="tabular-nums">{{ r.response_time_ms|floatformat:1 }}ms</td>
+              <td class="scale-metadata-text">{{ r.message }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 24px;" class="scale-metadata-text">
+                No health records logged yet.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

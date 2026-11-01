@@ -9,7 +9,39 @@ and this project adheres to Semantic Versioning.
 
 ---
 
-## [0.1.0-alpha.1] - 2026-11-01
+## [0.2.0-rc1] - 2026-11-01
+### Added
+- **Phase 3: Inventory Intelligence Engine:**
+  - Implemented `StockMovementService` with pessimistic concurrency locking (`select_for_update`), automatic balance calculation, and immutable audit logging.
+  - Built `InventoryClassificationService` executing automated ABC (Pareto 80/20 revenue) and XYZ demand variability analysis ($CV = \sigma / \mu$).
+  - Built `StockReconciliationService` handling physical count audits and supervisor-authorized discrepancy adjustments.
+  - Delivered Inventory Catalog ([`/inventory/`](file:///c:/Users/heman/OneDrive/Desktop/S.C.A.L.E.Core/templates/inventory/catalog.html)) and Movement Ledger views ([`/inventory/movements/`](file:///c:/Users/heman/OneDrive/Desktop/S.C.A.L.E.Core/templates/inventory/movements.html)).
+- **Phase 4: Predictive Intelligence & Dynamic ROP:**
+  - Implemented `TimeSeriesDataPipeline` with stockout-censoring correction and feature engineering (lags, rolling averages, calendar factors).
+  - Built `LSTMForecastingEngine` with multi-step LSTM neural network (128-64 units, Dropout 0.2, Huber loss) generating 30-day forecast horizons with 95% confidence intervals.
+  - Implemented `DynamicROPDecisionEngine` computing statistical Safety Stock ($SS = Z \times \sqrt{L \sigma_d^2 + \bar{D}^2 \sigma_L^2}$) and Dynamic $ROP = (\bar{D} \times L) + SS$.
+  - Built `ForecastBenchmarkEvaluator` evaluating MAE, RMSE, WAPE, and Forecast Bias against Holt-Winters Exponential Smoothing and Moving Average baselines.
+  - Delivered Interactive Forecasting Dashboard ([`/forecasting/`](file:///c:/Users/heman/OneDrive/Desktop/S.C.A.L.E.Core/templates/forecasting/dashboard.html)).
+- **Phase 5: Autonomous Procurement Engine & Suppliers:**
+  - Built `SupplierEvaluationService` ranking vendors via explainable composite multi-factor scoring (Reliability 45%, Quality 35%, Lead Time Compliance 20%).
+  - Built `AutonomousProcurementService` enforcing policy gatekeeper rules: auto-dispatching Category B orders $\le \$5,000$ and routing Category C orders $> \$5,000$ to the Supervisor approval queue.
+  - Built supervisor approval/rejection views with automated inventory incoming stock allocation.
+  - Delivered Purchase Order Registry ([`/procurement/`](file:///c:/Users/heman/OneDrive/Desktop/S.C.A.L.E.Core/templates/procurement/orders_list.html)) and Order Detail inspection ([`/procurement/orders/<id>/`](file:///c:/Users/heman/OneDrive/Desktop/S.C.A.L.E.Core/templates/procurement/order_detail.html)).
+- **Phase 6: Logistics & Goods Receipt:**
+  - Implemented `LogisticsService` managing dock arrivals, receipt verification, delivery discrepancy detection, and automatic on-hand inventory replenishment.
+- **Phase 8: Local AI Copilot & Query Engine:**
+  - Implemented `LocalOllamaClient` connecting locally to Llama 3.2 at `http://127.0.0.1:11434` with deterministic fallback when daemon is offline/restricted.
+  - Built `OperationalAIAdvisor` enabling context-aware retrieval answering supervisor questions on stockout risks, pending approvals, and financial exposure.
+  - Delivered AI Operations Workspace ([`/intelligence/`](file:///c:/Users/heman/OneDrive/Desktop/S.C.A.L.E.Core/templates/intelligence/workspace.html)).
+- **Phase 9: Autonomous Workflow Orchestration:**
+  - Implemented `AutonomousWorkflowOrchestrator` executing the 8-stage 02:00 AM autonomous supply chain operational cycle (ETL -> LSTM -> ROP -> Replenishment -> Policy Gate -> Classification -> Finance -> Audit).
+  - Built real-time Human Intervention Rate (HIR) and Automation Rate telemetry tracking.
+  - Delivered Automation Control Centre ([`/automation/`](file:///c:/Users/heman/OneDrive/Desktop/S.C.A.L.E.Core/templates/automation/control_center.html)).
+- **Phase 10: Subsystem Observability Probes:**
+  - Implemented `SystemHealthProbeService` running empirical latency probes on PostgreSQL, TensorFlow deep learning engine, and Ollama local AI.
+  - Delivered System Health Observability Dashboard ([`/system-health/`](file:///c:/Users/heman/OneDrive/Desktop/S.C.A.L.E.Core/templates/system_health/dashboard.html)).
+- **Automated Test Suite Expansion:**
+  - Comprehensive test suite in `tests/` expanded to 23 automated unit and integration tests passing with 100% success rate.
 ### Added
 - **Phase 1: Foundation Architecture Delivery:**
   - Designed and deployed custom user model `SCALEUser` with two-tier role authorization (`MANAGER` vs `EMPLOYEE`).

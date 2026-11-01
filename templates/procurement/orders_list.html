@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Procurement Operations — {{ BRAND.NAME }}{% endblock %}
+{% block breadcrumb %}Procurement / Purchase Orders{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 20px;">
+
+  <!-- Header -->
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <div>
+      <h1 class="scale-page-title">Autonomous Procurement Operations</h1>
+      <p class="scale-metadata-text" style="margin-top: 4px;">
+        15-stage procurement lifecycle. Routine low-risk orders dispatch automatically; high-value commitments route to Supervisor.
+      </p>
+    </div>
+    <div class="scale-badge scale-badge-info" style="font-size: 12px; padding: 6px 12px;">
+      Auto-Dispatch Ceiling: ${{ auto_dispatch_max|floatformat:2 }}
+    </div>
+  </div>
+
+  <!-- KPI Metrics -->
+  <div class="scale-kpi-grid">
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Pending Supervisor Approvals (Cat C)</div>
+      <div class="scale-kpi-val tabular-nums" style="color: {% if pending_approval_count > 0 %}var(--scale-warning-text){% else %}var(--scale-healthy-text){% endif %};">
+        {{ pending_approval_count }}
+      </div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span>Orders exceeding ${{ auto_dispatch_max|floatformat:2 }}</span>
+      </div>
+    </div>
+
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Active Dispatched Orders</div>
+      <div class="scale-kpi-val tabular-nums">{{ dispatched_count }}</div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span class="scale-badge scale-badge-healthy">In Transit / Vendor Confirmed</span>
+      </div>
+    </div>
+
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Total Financial Commitment</div>
+      <div class="scale-kpi-val tabular-nums">${{ total_commitments|floatformat:2 }}</div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span>Pending arrival and reconciliation</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Orders Table -->
+  <div class="scale-card">
+    <div class="scale-card-header">
+      <h3 class="scale-card-title">Purchase Order Registry</h3>
+      <div style="display: flex; gap: 6px;">
+        <a href="?status=AWAITING_APPROVAL" class="scale-btn scale-btn-secondary" style="font-size: 11px; padding: 4px 8px;">Awaiting Approval</a>
+        <a href="?status=DISPATCHED" class="scale-btn scale-btn-secondary" style="font-size: 11px; padding: 4px 8px;">Dispatched</a>
+        <a href="{% url 'procurement:orders-list' %}" class="scale-btn scale-btn-secondary" style="font-size: 11px; padding: 4px 8px;">All</a>
+      </div>
+    </div>
+
+    <div class="scale-table-container">
+      <table class="scale-table">
+        <thead>
+          <tr>
+            <th>PO Number</th>
+            <th>Category</th>
+            <th>Supplier</th>
+            <th>Warehouse</th>
+            <th style="text-align: right;">Total Value</th>
+            <th>Expected Delivery</th>
+            <th>Status</th>
+            <th>Creation Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for o in orders %}
+            <tr>
+              <td style="font-weight: 600; font-family: monospace;">
+                <a href="{% url 'procurement:order-detail' o.pk %}" style="color: var(--scale-indigo); text-decoration: none;">
+                  {{ o.po_number }}
+                </a>
+              </td>
+              <td>
+                {% if o.category == 'B' %}
+                  <span class="scale-badge scale-badge-healthy" title="Policy-Controlled Autonomous Dispatch">CAT B (AUTO)</span>
+                {% else %}
+                  <span class="scale-badge scale-badge-warning" title="Human Intervention Required">CAT C (SUPERVISOR)</span>
+                {% endif %}
+              </td>
+              <td>{{ o.supplier.code }} — {{ o.supplier.legal_name }}</td>
+              <td>{{ o.warehouse.code }}</td>
+              <td style="text-align: right; font-weight: 600;" class="tabular-nums">${{ o.total_amount|floatformat:2 }}</td>
+              <td class="tabular-nums">{{ o.expected_delivery_date }}</td>
+              <td>
+                {% if o.status == 'AWAITING_APPROVAL' %}
+                  <span class="scale-badge scale-badge-warning">AWAITING APPROVAL</span>
+                {% elif o.status == 'DISPATCHED' %}
+                  <span class="scale-badge scale-badge-healthy">DISPATCHED</span>
+                {% elif o.status == 'COMPLETED' %}
+                  <span class="scale-badge scale-badge-info">COMPLETED</span>
+                {% else %}
+                  <span class="scale-badge scale-badge-critical">{{ o.get_status_display|upper }}</span>
+                {% endif %}
+              </td>
+              <td class="tabular-nums scale-metadata-text">{{ o.created_at|date:"Y-m-d H:i" }}</td>
+              <td>
+                <a href="{% url 'procurement:order-detail' o.pk %}" class="scale-btn scale-btn-secondary" style="font-size: 11px; padding: 3px 8px;">
+                  Inspect &rarr;
+                </a>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="9" style="text-align: center; padding: 24px;" class="scale-metadata-text">
+                No purchase orders recorded.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

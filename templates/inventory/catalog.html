@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inventory Intelligence — {{ BRAND.NAME }}{% endblock %}
+{% block breadcrumb %}Inventory Intelligence / Master Catalog{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 20px;">
+
+  <!-- Header -->
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <div>
+      <h1 class="scale-page-title">Inventory Intelligence Engine</h1>
+      <p class="scale-metadata-text" style="margin-top: 4px;">
+        Physical on-hand balances, reserved allocations, and dynamic stockout thresholds across fulfillment centers.
+      </p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <a href="{% url 'inventory:movements' %}" class="scale-btn scale-btn-secondary">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        Movement Ledger
+      </a>
+      <a href="/procurement/" class="scale-btn scale-btn-primary">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+        Create Replenishment
+      </a>
+    </div>
+  </div>
+
+  <!-- KPI Strip -->
+  <div class="scale-kpi-grid">
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Active SKUs Monitored</div>
+      <div class="scale-kpi-val tabular-nums">{{ total_items }}</div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span class="scale-badge scale-badge-healthy">100% Tracking</span>
+      </div>
+    </div>
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Total Inventory Valuation</div>
+      <div class="scale-kpi-val tabular-nums">${{ total_valuation|floatformat:2 }}</div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span>Weighted cost average</span>
+      </div>
+    </div>
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Positions Below ROP</div>
+      <div class="scale-kpi-val tabular-nums" style="color: var(--scale-critical-text);">{{ below_rop_count }}</div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span class="scale-badge scale-badge-critical">Needs Replenishment</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Catalog Table Container -->
+  <div class="scale-card">
+    <div class="scale-card-header">
+      <h3 class="scale-card-title">Warehouse Stock Positions</h3>
+      <form method="get" style="display: flex; gap: 8px;">
+        <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Search SKU or Name..." style="padding: 6px 10px; border: 1px solid var(--scale-border-primary); border-radius: 6px; font-size: 12px; width: 220px;">
+        <button type="submit" class="scale-btn scale-btn-secondary" style="font-size: 12px; padding: 6px 12px;">Filter</button>
+      </form>
+    </div>
+
+    <div class="scale-table-container">
+      <table class="scale-table">
+        <thead>
+          <tr>
+            <th>SKU</th>
+            <th>Product Name</th>
+            <th>Warehouse</th>
+            <th>Class</th>
+            <th style="text-align: right;">On-Hand</th>
+            <th style="text-align: right;">Reserved</th>
+            <th style="text-align: right;">Available</th>
+            <th style="text-align: right;">Incoming</th>
+            <th style="text-align: right;">ROP</th>
+            <th style="text-align: right;">Unit Cost</th>
+            <th style="text-align: right;">Valuation</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in balances %}
+            <tr>
+              <td style="font-weight: 600;">{{ b.product.sku }}</td>
+              <td>{{ b.product.name }}</td>
+              <td><span class="scale-badge scale-badge-info">{{ b.warehouse.code }}</span></td>
+              <td>
+                <span class="scale-badge scale-badge-healthy">{{ b.product.abc_class|default:"A" }}</span>
+                <span class="scale-badge scale-badge-info">{{ b.product.xyz_class|default:"X" }}</span>
+              </td>
+              <td style="text-align: right;" class="tabular-nums">{{ b.on_hand_stock }}</td>
+              <td style="text-align: right;" class="tabular-nums" style="color: var(--scale-text-secondary);">{{ b.reserved_stock }}</td>
+              <td style="text-align: right;" class="tabular-nums" style="font-weight: 600;">{{ b.available_stock }}</td>
+              <td style="text-align: right;" class="tabular-nums">{{ b.incoming_stock }}</td>
+              <td style="text-align: right;" class="tabular-nums">{{ b.product.reorder_point }}</td>
+              <td style="text-align: right;" class="tabular-nums">${{ b.product.unit_cost|floatformat:2 }}</td>
+              <td style="text-align: right;" class="tabular-nums">${{ b.total_valuation|floatformat:2 }}</td>
+              <td>
+                {% if b.is_below_rop %}
+                  <span class="scale-badge scale-badge-critical">BELOW ROP</span>
+                {% else %}
+                  <span class="scale-badge scale-badge-healthy">HEALTHY</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="12" style="text-align: center; padding: 24px;" class="scale-metadata-text">
+                No inventory records matching criteria.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

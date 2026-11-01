@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inventory Movement Ledger — {{ BRAND.NAME }}{% endblock %}
+{% block breadcrumb %}Inventory Intelligence / Movement Ledger{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 20px;">
+
+  <!-- Header -->
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <div>
+      <h1 class="scale-page-title">Inventory Movement Ledger</h1>
+      <p class="scale-metadata-text" style="margin-top: 4px;">
+        Immutable audit trail of physical inbound receipts, dispatches, adjustments, and damage write-offs.
+      </p>
+    </div>
+    <div>
+      <a href="{% url 'inventory:catalog' %}" class="scale-btn scale-btn-secondary">
+        &larr; Back to Catalog
+      </a>
+    </div>
+  </div>
+
+  <!-- Movements Table -->
+  <div class="scale-card">
+    <div class="scale-table-container">
+      <table class="scale-table">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Tx Number</th>
+            <th>Movement Type</th>
+            <th>SKU & Product</th>
+            <th>Warehouse</th>
+            <th style="text-align: right;">Quantity</th>
+            <th style="text-align: right;">Balance Before</th>
+            <th style="text-align: right;">Balance After</th>
+            <th>Ref Document</th>
+            <th>Operator</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in movements %}
+            <tr>
+              <td class="tabular-nums scale-metadata-text">{{ m.timestamp|date:"Y-m-d H:i:s" }}</td>
+              <td style="font-weight: 600; font-family: monospace;">{{ m.transaction_number }}</td>
+              <td>
+                {% if 'RECEIPT' in m.movement_type %}
+                  <span class="scale-badge scale-badge-healthy">{{ m.get_movement_type_display }}</span>
+                {% elif 'DAMAGE' in m.movement_type %}
+                  <span class="scale-badge scale-badge-critical">{{ m.get_movement_type_display }}</span>
+                {% else %}
+                  <span class="scale-badge scale-badge-info">{{ m.get_movement_type_display }}</span>
+                {% endif %}
+              </td>
+              <td>{{ m.product.sku }} — {{ m.product.name }}</td>
+              <td>{{ m.warehouse.code }}</td>
+              <td style="text-align: right; font-weight: 600;" class="tabular-nums">
+                {% if m.quantity > 0 %}+{{ m.quantity }}{% else %}{{ m.quantity }}{% endif %}
+              </td>
+              <td style="text-align: right;" class="tabular-nums">{{ m.balance_before }}</td>
+              <td style="text-align: right; font-weight: 600;" class="tabular-nums">{{ m.balance_after }}</td>
+              <td class="scale-metadata-text">{{ m.reference_doc_type }} #{{ m.reference_doc_id }}</td>
+              <td>{{ m.performed_by.username|default:"SYSTEM" }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="10" style="text-align: center; padding: 24px;" class="scale-metadata-text">
+                No movements recorded in this period.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

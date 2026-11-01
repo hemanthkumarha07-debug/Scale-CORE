@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ order.po_number }} — {{ BRAND.NAME }}{% endblock %}
+{% block breadcrumb %}Procurement / Order {{ order.po_number }}{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 20px;">
+
+  <!-- Header & Back Button -->
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <a href="{% url 'procurement:orders-list' %}" class="scale-btn scale-btn-secondary">
+        &larr; All Orders
+      </a>
+      <div>
+        <h1 class="scale-page-title" style="display: flex; align-items: center; gap: 10px;">
+          {{ order.po_number }}
+          {% if order.category == 'B' %}
+            <span class="scale-badge scale-badge-healthy">Category B (Autonomous)</span>
+          {% else %}
+            <span class="scale-badge scale-badge-warning">Category C (Supervisor Required)</span>
+          {% endif %}
+        </h1>
+        <div class="scale-metadata-text" style="margin-top: 2px;">
+          Generated on {{ order.created_at|date:"Y-m-d H:i:s" }} UTC
+        </div>
+      </div>
+    </div>
+
+    <!-- Supervisor Action Buttons (If Awaiting Approval) -->
+    {% if order.status == 'AWAITING_APPROVAL' and IS_MANAGER %}
+      <div style="display: flex; gap: 10px;">
+        <form method="post" action="{% url 'procurement:order-reject' order.pk %}" onsubmit="return confirm('Reject and cancel this purchase order?');">
+          {% csrf_token %}
+          <button type="submit" class="scale-btn scale-btn-danger">
+            Reject Order
+          </button>
+        </form>
+        <form method="post" action="{% url 'procurement:order-approve' order.pk %}" onsubmit="return confirm('Authorize and dispatch this purchase order?');">
+          {% csrf_token %}
+          <button type="submit" class="scale-btn scale-btn-primary">
+            Authorize & Dispatch
+          </button>
+        </form>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Order Metadata Cards Grid -->
+  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+
+    <!-- Left: Line Items & Details -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      <div class="scale-card">
+        <h3 class="scale-card-title" style="margin-bottom: 14px;">Order Line Items</h3>
+        <div class="scale-table-container">
+          <table class="scale-table">
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Product Description</th>
+                <th style="text-align: right;">Quantity</th>
+                <th style="text-align: right;">Unit Price</th>
+                <th style="text-align: right;">Total Price</th>
+                <th style="text-align: right;">Received</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in items %}
+                <tr>
+                  <td style="font-weight: 600;">{{ item.product.sku }}</td>
+                  <td>{{ item.product.name }}</td>
+                  <td style="text-align: right;" class="tabular-nums">{{ item.quantity }}</td>
+                  <td style="text-align: right;" class="tabular-nums">${{ item.unit_price|floatformat:4 }}</td>
+                  <td style="text-align: right; font-weight: 600;" class="tabular-nums">${{ item.total_price|floatformat:2 }}</td>
+                  <td style="text-align: right;" class="tabular-nums">{{ item.quantity_received }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr style="background-color: var(--scale-surface-secondary); font-weight: 600;">
+                <td colspan="4" style="text-align: right; padding: 12px 14px;">TOTAL ORDER VALUE:</td>
+                <td style="text-align: right; padding: 12px 14px; font-size: 14px; color: var(--scale-indigo);" class="tabular-nums">
+                  ${{ order.total_amount|floatformat:2 }}
+                </td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- AI Justification Card -->
+      <div class="scale-card" style="border-left: 3px solid var(--scale-indigo);">
+        <h3 class="scale-card-title" style="margin-bottom: 8px;">Autonomous Recommendation & Justification Context</h3>
+        <p class="scale-body-text" style="white-space: pre-line; line-height: 1.6; color: var(--scale-text-primary);">
+          {{ order.ai_justification|default:"Standard autonomous replenishment order based on Dynamic ROP calculation." }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Right: Supplier & Delivery Metadata -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
+      <div class="scale-card">
+        <h3 class="scale-card-title" style="margin-bottom: 12px;">Supplier & Destination</h3>
+        <div style="display: flex; flex-direction: column; gap: 10px;" class="scale-metadata-text">
+          <div>
+            <div style="color: var(--scale-text-secondary);">Vendor Name</div>
+            <div style="color: var(--scale-text-primary); font-size: 13px; font-weight: 600;">{{ order.supplier.legal_name }} ({{ order.supplier.code }})</div>
+          </div>
+          <div>
+            <div style="color: var(--scale-text-secondary);">Supplier Score</div>
+            <div style="color: var(--scale-text-primary); font-size: 13px;">{{ order.supplier.composite_score|floatformat:1 }}/100</div>
+          </div>
+          <div>
+            <div style="color: var(--scale-text-secondary);">Payment Terms</div>
+            <div style="color: var(--scale-text-primary); font-size: 13px;">{{ order.supplier.get_payment_terms_display }}</div>
+          </div>
+          <div>
+            <div style="color: var(--scale-text-secondary);">Delivery Destination</div>
+            <div style="color: var(--scale-text-primary); font-size: 13px; font-weight: 600;">{{ order.warehouse.name }} ({{ order.warehouse.code }})</div>
+          </div>
+          <div>
+            <div style="color: var(--scale-text-secondary);">Expected Delivery Date</div>
+            <div style="color: var(--scale-text-primary); font-size: 13px; font-weight: 600;">{{ order.expected_delivery_date }}</div>
+          </div>
+          <div style="border-top: 1px solid var(--scale-border-primary); padding-top: 8px;">
+            <div style="color: var(--scale-text-secondary);">Current Status</div>
+            <div style="margin-top: 4px;">
+              {% if order.status == 'AWAITING_APPROVAL' %}
+                <span class="scale-badge scale-badge-warning">AWAITING APPROVAL</span>
+              {% elif order.status == 'DISPATCHED' %}
+                <span class="scale-badge scale-badge-healthy">DISPATCHED</span>
+              {% else %}
+                <span class="scale-badge scale-badge-info">{{ order.get_status_display }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

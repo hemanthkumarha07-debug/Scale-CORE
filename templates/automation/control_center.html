@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Automation Control Centre — {{ BRAND.NAME }}{% endblock %}
+{% block breadcrumb %}Automation Control Centre{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 20px;">
+
+  <!-- Header & Actions -->
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <div>
+      <h1 class="scale-page-title">Automation Control Centre</h1>
+      <p class="scale-metadata-text" style="margin-top: 4px;">
+        Centralized operational command of autonomous multi-department workflows. One supervisor monitors; SCALE.Core operates.
+      </p>
+    </div>
+    <div>
+      <form method="post" action="{% url 'automation:trigger-pipeline' %}" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="scale-btn scale-btn-primary">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          Execute Autonomous Operational Cycle (02:00 AM)
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Automation Telemetry KPI Strip -->
+  <div class="scale-kpi-grid">
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Autonomous Operation Rate</div>
+      <div class="scale-kpi-val tabular-nums" style="color: var(--scale-healthy-text);">
+        {{ telemetry.automation_rate_pct }}%
+      </div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span class="scale-badge scale-badge-healthy">Policy Compliant</span>
+      </div>
+    </div>
+
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Human Intervention Rate (HIR)</div>
+      <div class="scale-kpi-val tabular-nums" style="color: var(--scale-indigo);">
+        {{ telemetry.human_intervention_rate_pct }}%
+      </div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span>Target ceiling: &le; 10.0%</span>
+      </div>
+    </div>
+
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Total Workflows Executed</div>
+      <div class="scale-kpi-val tabular-nums">{{ telemetry.total_executions }}</div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span class="scale-badge scale-badge-info">{{ telemetry.completed_executions }} Completed</span>
+      </div>
+    </div>
+
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Tasks Automated Today</div>
+      <div class="scale-kpi-val tabular-nums">{{ telemetry.tasks_automated_today }}</div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span>Zero manual intervention</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Workflows Registry & Recent Execution Streams Grid -->
+  <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+
+    <!-- Left: Registered Workflow Definitions -->
+    <div class="scale-card">
+      <h3 class="scale-card-title" style="margin-bottom: 12px;">Active Automation Workflows</h3>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        {% for wf in workflows %}
+          <div style="border: 1px solid var(--scale-border-primary); border-radius: 6px; padding: 10px 12px; background-color: var(--scale-surface-secondary);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <span style="font-weight: 600; font-size: 13px;">{{ wf.name }}</span>
+              <span class="scale-badge scale-badge-info">Cat {{ wf.execution_category }}</span>
+            </div>
+            <div class="scale-metadata-text">
+              Type: <code>{{ wf.workflow_type }}</code> | Timeout: {{ wf.timeout_seconds }}s
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Right: Execution History Stream -->
+    <div class="scale-card">
+      <h3 class="scale-card-title" style="margin-bottom: 12px;">Execution Telemetry & Idempotency Audit</h3>
+      <div class="scale-table-container">
+        <table class="scale-table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Workflow</th>
+              <th>Idempotency Key</th>
+              <th style="text-align: right;">Duration</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ex in executions %}
+              <tr>
+                <td class="tabular-nums scale-metadata-text">{{ ex.initiated_at|date:"Y-m-d H:i:s" }}</td>
+                <td style="font-weight: 600;">{{ ex.workflow.name }}</td>
+                <td class="tabular-nums scale-metadata-text" style="font-family: monospace;">{{ ex.idempotency_key|slice:":18" }}...</td>
+                <td style="text-align: right;" class="tabular-nums">{{ ex.duration_seconds|floatformat:2 }}s</td>
+                <td>
+                  {% if ex.status == 'COMPLETED' %}
+                    <span class="scale-badge scale-badge-healthy">COMPLETED</span>
+                  {% elif ex.status == 'AWAITING_APPROVAL' %}
+                    <span class="scale-badge scale-badge-warning">CAT C APPROVAL</span>
+                  {% elif ex.status == 'RUNNING' %}
+                    <span class="scale-badge scale-badge-info">RUNNING</span>
+                  {% else %}
+                    <span class="scale-badge scale-badge-critical">{{ ex.status }}</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="5" style="text-align: center; padding: 24px;" class="scale-metadata-text">
+                  No workflow executions recorded yet.
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
