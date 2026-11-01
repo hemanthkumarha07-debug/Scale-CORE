@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Operational Exceptions & Notifications — {{ BRAND.NAME }}{% endblock %}
+{% block breadcrumb %}Exceptions & Notifications{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 20px;">
+
+  <!-- Header -->
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <div>
+      <h1 class="scale-page-title">Operational Exceptions & Notification Hub</h1>
+      <p class="scale-metadata-text" style="margin-top: 4px;">
+        Prioritized system events: critical stockouts, approval requests, late shipments, and workflow anomalies.
+      </p>
+    </div>
+  </div>
+
+  <!-- KPI Strip -->
+  <div class="scale-kpi-grid">
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Unacknowledged Critical Alerts</div>
+      <div class="scale-kpi-val tabular-nums" style="color: {% if critical_count > 0 %}var(--scale-critical-text){% else %}var(--scale-healthy-text){% endif %};">
+        {{ critical_count }}
+      </div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span>Immediate attention required</span>
+      </div>
+    </div>
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Unread Notifications</div>
+      <div class="scale-kpi-val tabular-nums">{{ unread_count }}</div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span>Across all operational categories</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notifications List Table -->
+  <div class="scale-card">
+    <div class="scale-table-container">
+      <table class="scale-table">
+        <thead>
+          <tr>
+            <th>Priority</th>
+            <th>Category</th>
+            <th>Headline & Message</th>
+            <th>Timestamp</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for n in notifications %}
+            <tr {% if not n.is_read %}style="background-color: var(--scale-surface-secondary); font-weight: 500;"{% endif %}>
+              <td>
+                {% if n.priority == 'CRITICAL' %}
+                  <span class="scale-badge scale-badge-critical">CRITICAL</span>
+                {% elif n.priority == 'WARNING' %}
+                  <span class="scale-badge scale-badge-warning">WARNING</span>
+                {% else %}
+                  <span class="scale-badge scale-badge-info">INFO</span>
+                {% endif %}
+              </td>
+              <td class="scale-metadata-text">{{ n.get_category_display }}</td>
+              <td>
+                <div style="font-weight: 600; color: var(--scale-text-primary);">{{ n.title }}</div>
+                <div class="scale-metadata-text" style="margin-top: 2px;">{{ n.message }}</div>
+              </td>
+              <td class="tabular-nums scale-metadata-text">{{ n.created_at|date:"Y-m-d H:i" }}</td>
+              <td>
+                {% if n.is_acknowledged %}
+                  <span class="scale-badge scale-badge-healthy">ACKNOWLEDGED</span>
+                {% else %}
+                  <span class="scale-badge scale-badge-warning">OPEN</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if not n.is_acknowledged %}
+                  <form method="post" action="{% url 'notifications:ack' n.pk %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="scale-btn scale-btn-secondary" style="font-size: 11px; padding: 3px 8px;">
+                      Acknowledge
+                    </button>
+                  </form>
+                {% else %}
+                  <span class="scale-metadata-text">Done</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" style="text-align: center; padding: 24px;" class="scale-metadata-text">
+                No active operational exceptions. All systems nominal.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

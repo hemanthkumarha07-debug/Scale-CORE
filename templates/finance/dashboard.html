@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Financial Intelligence — {{ BRAND.NAME }}{% endblock %}
+{% block breadcrumb %}Financial Intelligence / Capital at Risk{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 20px;">
+
+  <!-- Header -->
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <div>
+      <h1 class="scale-page-title">Financial Intelligence & Working Capital Exposure</h1>
+      <p class="scale-metadata-text" style="margin-top: 4px;">
+        Restricted to Management. Telemetry on capital tied up in inventory, excess stock liability, and procurement commitments.
+      </p>
+    </div>
+    <span class="scale-badge scale-badge-critical">CONFIDENTIAL / SUPERVISOR ONLY</span>
+  </div>
+
+  <!-- KPI Metrics Strip -->
+  <div class="scale-kpi-grid">
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Total Inventory Valuation</div>
+      <div class="scale-kpi-val tabular-nums">${{ total_valuation|floatformat:2 }}</div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span>Working capital deployed</span>
+      </div>
+    </div>
+
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Capital at Risk (Excess Stock)</div>
+      <div class="scale-kpi-val tabular-nums" style="color: var(--scale-critical-text);">${{ capital_at_risk|floatformat:2 }}</div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span class="scale-badge scale-badge-warning">Inventory exceeding max ceilings</span>
+      </div>
+    </div>
+
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Projected Annual Holding Cost</div>
+      <div class="scale-kpi-val tabular-nums">${{ holding_cost|floatformat:2 }}</div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span>Carrying cost ~18% - 20%</span>
+      </div>
+    </div>
+
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Pending PO Commitments</div>
+      <div class="scale-kpi-val tabular-nums" style="color: var(--scale-indigo);">${{ pending_commitments|floatformat:2 }}</div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span>Dispatched & in transit</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Itemized Excess Inventory Table -->
+  <div class="scale-card">
+    <div class="scale-card-header">
+      <div>
+        <h3 class="scale-card-title">Excess Inventory Capital Exposure by SKU</h3>
+        <div class="scale-metadata-text">Items with On-Hand Stock &gt; 150% of Dynamic Reorder Point</div>
+      </div>
+    </div>
+
+    <div class="scale-table-container">
+      <table class="scale-table">
+        <thead>
+          <tr>
+            <th>SKU</th>
+            <th>Product Name</th>
+            <th>Warehouse</th>
+            <th style="text-align: right;">On-Hand</th>
+            <th style="text-align: right;">ROP</th>
+            <th style="text-align: right;">Excess Qty</th>
+            <th style="text-align: right;">Excess Capital at Risk</th>
+            <th style="text-align: right;">Annual Carrying Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in excess_items %}
+            <tr>
+              <td style="font-weight: 600;">{{ item.sku }}</td>
+              <td>{{ item.name }}</td>
+              <td><span class="scale-badge scale-badge-info">{{ item.warehouse }}</span></td>
+              <td style="text-align: right;" class="tabular-nums">{{ item.on_hand }}</td>
+              <td style="text-align: right;" class="tabular-nums">{{ item.rop }}</td>
+              <td style="text-align: right; color: var(--scale-critical-text);" class="tabular-nums">+{{ item.excess_quantity }}</td>
+              <td style="text-align: right; font-weight: 600;" class="tabular-nums">${{ item.excess_valuation|floatformat:2 }}</td>
+              <td style="text-align: right;" class="tabular-nums">${{ item.holding_cost_annual|floatformat:2 }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="8" style="text-align: center; padding: 24px;" class="scale-metadata-text">
+                No excess inventory positions exceeding risk ceilings. All balances lean and optimized.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

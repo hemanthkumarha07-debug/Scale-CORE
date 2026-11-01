@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reporting & Business Intelligence — {{ BRAND.NAME }}{% endblock %}
+{% block breadcrumb %}Reporting & Export Center{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 20px;">
+
+  <!-- Header -->
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <div>
+      <h1 class="scale-page-title">Reporting & Business Intelligence Center</h1>
+      <p class="scale-metadata-text" style="margin-top: 4px;">
+        Automated data extracts and auditable operational reports for compliance, financial audits, and logistics analysis.
+      </p>
+    </div>
+  </div>
+
+  <!-- Reports Grid -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+
+    <!-- Report 1: Inventory Health -->
+    <div class="scale-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+        <div>
+          <h3 class="scale-card-title">Inventory Health & Valuation Extract</h3>
+          <p class="scale-metadata-text" style="margin-top: 4px;">
+            Full SKU breakdown with physical on-hand, reserved, available, incoming, ROP, unit cost, and valuation.
+          </p>
+        </div>
+        <span class="scale-badge scale-badge-healthy">CSV</span>
+      </div>
+      <div style="margin-top: 16px;">
+        <a href="{% url 'reporting:export-inventory' %}" class="scale-btn scale-btn-primary" style="width: 100%;">
+          Download Inventory CSV
+        </a>
+      </div>
+    </div>
+
+    <!-- Report 2: Procurement Commitments -->
+    <div class="scale-card">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+        <div>
+          <h3 class="scale-card-title">Procurement Commitments Ledger</h3>
+          <p class="scale-metadata-text" style="margin-top: 4px;">
+            Audit log of all purchase orders, supplier commitments, expected delivery dates, and policy categories.
+          </p>
+        </div>
+        <span class="scale-badge scale-badge-info">CSV</span>
+      </div>
+      <div style="margin-top: 16px;">
+        <a href="{% url 'reporting:export-procurement' %}" class="scale-btn scale-btn-primary" style="width: 100%;">
+          Download Procurement CSV
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

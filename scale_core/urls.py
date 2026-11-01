@@ -19,6 +19,15 @@ urlpatterns = [
     path('intelligence/', include('apps.intelligence.urls', namespace='intelligence')),
     # Automation Control Centre Module
     path('automation/', include('apps.automation.urls', namespace='automation')),
+    # Suppliers Module
+    path('suppliers/', include('apps.suppliers.urls', namespace='suppliers')),
+    # Logistics Module (Goods Receipt & Shipments)
+    # Financial Intelligence Module
+    path('finance/', include('apps.finance.urls', namespace='finance')),
+    # Notifications Module
+    path('notifications/', include('apps.notifications.urls', namespace='notifications')),
     # System Health Module
     path('system-health/', include('apps.system_health.urls', namespace='system_health')),
+    # Reporting Module
+    path('reporting/', include('apps.reporting.urls', namespace='reporting')),
 ]

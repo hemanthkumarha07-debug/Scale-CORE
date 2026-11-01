@@ -9,6 +9,21 @@ and this project adheres to Semantic Versioning.
 
 ---
 
+## [1.0.0-rc1] - 2026-11-01
+### Added
+- **Complete End-to-End Operational Lifecycle Verification (Part 26.6):**
+  - Implemented and verified `tests/test_e2e_lifecycle.py` tracing the complete 16-step operational chain: sales demand ingestion -> stock reduction -> LSTM inference -> Dynamic ROP calculation -> critical stockout detection -> replenishment PO drafting -> policy gate evaluation -> supervisor approval -> shipment monitoring -> goods receipt -> stock replenishment -> cryptographic audit chain validation -> management telemetry.
+- **Financial Intelligence Workspace (Part 15):**
+  - Delivered `/finance/` restricted to System Supervisors with itemized excess stock capital-at-risk analysis and carrying cost metrics.
+- **Reporting & Business Intelligence (Part 20):**
+  - Delivered `/reporting/` with automated CSV exports for Inventory Health and Procurement Commitments.
+- **Exceptions & Notification Hub (Part 19):**
+  - Delivered `/notifications/` with unread counts and 1-click acknowledgement workflow.
+- **Supplier Directory (Part 13):**
+  - Delivered `/suppliers/` with vendor scorecards, contact directories, and lead-time compliance metrics.
+- **Automated Test Suite Expansion:**
+  - Expanded test suite to 24 tests passing with 100% success rate across all eleven layers of the architecture.
+
 ## [0.2.0-rc1] - 2026-11-01
 ### Added
 - **Phase 3: Inventory Intelligence Engine:**

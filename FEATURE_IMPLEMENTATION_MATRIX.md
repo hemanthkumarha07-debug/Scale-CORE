@@ -59,9 +59,9 @@ In strict compliance with **Part 3.4 and Part 30 (Rule 21)** of the Master Speci
 | **F035** | Audit Hash-Chain Tamper Detection | Part 7.3 | Phase 10 | A | `audit.services.AuditIntegrityService` | Shell / Daily Pipeline | Manager Only | **VERIFIED** |
 | **F036** | Centralized Notification & Deduplication| Part 19 | Phase 10 | A | `notifications.models.Notification` | `/notifications/` | Authenticated | **VERIFIED** |
 | **F037** | System Health Probes (DB, Celery, AI) | Part 21 | Phase 10 | A | `system_health.services.SystemHealthProbeService` | `/system-health/` | Manager Only | **VERIFIED** |
-| **F038** | Automated PDF / CSV / XLSX Reporting | Part 20 | Phase 10 | A | `reporting.services.ReportService` | `/reporting/export/` | Manager Only | **PLANNED** |
-| **F039** | End-to-End Operational Lifecycle Tests | Part 26.6 | Phase 11 | N/A | `tests.e2e.test_lifecycle` | Pytest / Django Test | Developer / CI | **PLANNED** |
-| **F040** | Linux Systemd Services & Deployment | Part 24 | Phase 11 | N/A | Systemd Units + Nginx Conf | Linux Host System | DevOps / Operator | **PLANNED** |
+| **F038** | Automated PDF / CSV / XLSX Reporting | Part 20 | Phase 10 | A | `reporting.views.ExportInventoryCSVView` | `/reporting/` | Manager Only | **VERIFIED** |
+| **F039** | End-to-End Operational Lifecycle Tests | Part 26.6 | Phase 11 | N/A | `tests.test_e2e_lifecycle` | Pytest / Django Test | Developer / CI | **VERIFIED** |
+| **F040** | Linux Systemd Services & Deployment | Part 24 | Phase 11 | N/A | `DEPLOYMENT_GUIDE.md` | Linux Host Runbook | DevOps / Operator | **VERIFIED** |
 
 ---
 

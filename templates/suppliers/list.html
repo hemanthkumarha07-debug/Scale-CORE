@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Supplier Management — {{ BRAND.NAME }}{% endblock %}
+{% block breadcrumb %}Supplier Management / Vendor Directory{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 20px;">
+
+  <!-- Header -->
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <div>
+      <h1 class="scale-page-title">Supplier Management Directory</h1>
+      <p class="scale-metadata-text" style="margin-top: 4px;">
+        Vendor reliability scorecards, lead-time variance, and contracted product pricing.
+      </p>
+    </div>
+  </div>
+
+  <!-- KPI Strip -->
+  <div class="scale-kpi-grid">
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Active Vendors</div>
+      <div class="scale-kpi-val tabular-nums">{{ active_suppliers }}</div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span class="scale-badge scale-badge-healthy">Verified Contracts</span>
+      </div>
+    </div>
+    <div class="scale-kpi-card">
+      <div class="scale-kpi-label">Average Supplier Reliability</div>
+      <div class="scale-kpi-val tabular-nums" style="color: var(--scale-healthy-text);">95.5%</div>
+      <div class="scale-kpi-footer scale-metadata-text">
+        <span>Delivery compliance &ge; 90%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Suppliers Table -->
+  <div class="scale-card">
+    <div class="scale-table-container">
+      <table class="scale-table">
+        <thead>
+          <tr>
+            <th>Vendor Code</th>
+            <th>Legal Entity</th>
+            <th>Contact</th>
+            <th>Payment Terms</th>
+            <th style="text-align: right;">Reliability</th>
+            <th style="text-align: right;">Quality</th>
+            <th style="text-align: right;">Composite Score</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in suppliers %}
+            <tr>
+              <td style="font-weight: 600; font-family: monospace;">{{ s.code }}</td>
+              <td>{{ s.legal_name }}</td>
+              <td>{{ s.contact_person }} ({{ s.email }})</td>
+              <td>{{ s.get_payment_terms_display }}</td>
+              <td style="text-align: right;" class="tabular-nums">{{ s.reliability_score }}%</td>
+              <td style="text-align: right;" class="tabular-nums">{{ s.quality_score }}%</td>
+              <td style="text-align: right; font-weight: 600;" class="tabular-nums">{{ s.composite_score|floatformat:1 }}/100</td>
+              <td>
+                <span class="scale-badge scale-badge-healthy">{{ s.get_status_display|upper }}</span>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="8" style="text-align: center; padding: 24px;" class="scale-metadata-text">
+                No suppliers registered.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
